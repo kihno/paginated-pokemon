@@ -12,11 +12,20 @@ const PokemonList = () => {
   useEffect(() => {
     axios.get('https://pokeapi.co/api/v2/pokemon?limit=5&offset=0')
       .then((response) => {
-        console.log(response.data);
         setPokemon(response.data.results);
         setCount(response.data.count);
       });
   }, []);
+
+  const handleLoadMore = (e) => {
+    e.preventDefault();
+    const offset = pokemons.length;
+
+    axios.get(`https://pokeapi.co/api/v2/pokemon?limit=5&offset=${offset}`)
+      .then((response) => {
+        setPokemon(prevList => [...prevList, ...response.data.results]);
+      });
+  }
 
   return (
     <div>
@@ -28,7 +37,7 @@ const PokemonList = () => {
         ))}
       </ul>
       <div>Displaying {pokemons.length} of {count} results </div>
-      <button>Load more</button>
+      {pokemons.length !== count && <button onClick={handleLoadMore}>Load more</button>}
     </div>
   )
 };
